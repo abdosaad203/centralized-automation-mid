@@ -1,0 +1,54 @@
+name: Reusable .NET CI
+
+on:
+  workflow_call:
+    inputs:
+      dotnet-vertion:
+        required: true
+        type: string
+      project-path:
+        required: true
+        type: string
+      build-configuration:
+        required: true
+        type: string
+      run-tests:
+        required: true
+        type: boolean
+
+jobs:
+  build-dotnet:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Chekout Code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-vertion: ${{ inputs.dotnet-vertion }}
+
+      - name: Restore Dependancies
+        run: dotnet restore ${{ inputs.project-path }}
+
+      - name: build
+        run: dotnet build ${{ inputs.project-path }} \
+          -c ${{ inputs.build-configuration }} \
+          -no-restore
+
+      - name: run Tests
+        if: ${{ inputs.run-tests }}
+        run: dotnet test ${{ inputs.project-path }} -no-build
+
+      - name: publish
+        run: |
+          dotnet publish ${{ inputs.project-path }} \
+            -c ${{ inputs.build-configuration }} \
+            -o build-output
+
+      - name: upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dotnet-build
+          path: build-output
