@@ -27,9 +27,7 @@ runs:
   steps:
     - name: Run S2I Script
       shell: bash
-      # بنشغل السكريبت باستخدام bash
       run: bash ${{ github.action_path }}/entrypoint.sh
-      # لازم نمرر الـ inputs كـ Environment Variables يدوياً في الـ composite
       env:
         INPUT_REGISTRY: ${{ inputs.registry }}
         INPUT_USERNAME: ${{ inputs.username }}
