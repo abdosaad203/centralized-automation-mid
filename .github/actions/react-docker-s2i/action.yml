@@ -5,32 +5,35 @@ inputs:
   registry:
     description: Docker registry
     required: true
-
   username:
     description: Registry username
     required: true
-
   password:
     description: Registry password
     required: true
-
   image_name:
     description: Docker image name
     required: true
-
   tag:
     description: Docker image tag
     required: false
     default: latest
-
   api-base-url:
     description: Vite API base URL
-    required: true
-
-outputs:
-  image_name:
-    description: Full image name
+    required: false
 
 runs:
-  using: docker
-  image: Dockerfile.react
+  using: "composite"
+  steps:
+    - name: Run S2I Script
+      shell: bash
+      # بنشغل السكريبت باستخدام bash
+      run: bash ${{ github.action_path }}/entrypoint.sh
+      # لازم نمرر الـ inputs كـ Environment Variables يدوياً في الـ composite
+      env:
+        INPUT_REGISTRY: ${{ inputs.registry }}
+        INPUT_USERNAME: ${{ inputs.username }}
+        INPUT_PASSWORD: ${{ inputs.password }}
+        INPUT_IMAGE_NAME: ${{ inputs.image_name }}
+        INPUT_TAG: ${{ inputs.tag }}
+        GITHUB_ACTION_PATH: ${{ github.action_path }}
