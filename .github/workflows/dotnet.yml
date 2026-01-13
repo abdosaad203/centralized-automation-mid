@@ -19,6 +19,11 @@ on:
 jobs:
   build-dotnet:
     runs-on: ubuntu-latest
+    # أذونات عشان يقدر يرفع للـ GHCR ويرفع تقارير السكيورتي
+    permissions:
+      contents: read
+      packages: write
+      security-events: write
 
     steps:
       - name: Checkout Code
@@ -48,8 +53,31 @@ jobs:
             -c ${{ inputs.build-configuration }} \
             -o build-output
 
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
+      - name: Login to GHCR
+        uses: docker/login-action@v3
         with:
-          name: dotnet-build
-          path: build-output
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and Push Backend Docker Image
+        working-directory: build-output
+        run: |
+          cp ../${{ inputs.project-path }}/Dockerfile .
+          docker build -t ghcr.io/${{ github.repository }}/backend:latest .
+          docker push ghcr.io/${{ github.repository }}/backend:latest
+          docker tag ghcr.io/${{ github.repository }}/backend:latest ghcr.io/${{ github.repository }}/backend:${{ github.sha }}
+          docker push ghcr.io/${{ github.repository }}/backend:${{ github.sha }}
+
+      - name: Scan Backend Image with Trivy
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ghcr.io/${{ github.repository }}/backend:latest
+          format: sarif
+          output: trivy-dotnet.sarif
+        continue-on-error: true
+
+      - name: Upload Trivy Report
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: trivy-dotnet.sarif
