@@ -7,7 +7,11 @@ echo "$INPUT_PASSWORD" | docker login "$INPUT_REGISTRY" \
 
 IMAGE="$INPUT_REGISTRY/$INPUT_IMAGE_NAME:$INPUT_TAG"
 
-echo "Build Docker image from frontend/dist"
+echo "Listing frontend directory"
+ls -la frontend
+ls -la frontend/dist
+
+echo "Build Docker image"
 docker build \
   -t "$IMAGE" \
   -f "$GITHUB_ACTION_PATH/Dockerfile.react" \
