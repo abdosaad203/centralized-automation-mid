@@ -1,18 +1,19 @@
 #!/bin/sh
 set -e
 
-echo "Logging in to registry..."
+echo "Login to registry"
 echo "$INPUT_PASSWORD" | docker login "$INPUT_REGISTRY" \
   -u "$INPUT_USERNAME" --password-stdin
 
 IMAGE="$INPUT_REGISTRY/$INPUT_IMAGE_NAME:$INPUT_TAG"
 
-echo "Building Docker image..."
+echo "Build Docker image from frontend/dist"
 docker build \
-  --build-arg VITE_API_BASE_URL="$INPUT_API_BASE_URL" \
-  -t "$IMAGE" .
+  -t "$IMAGE" \
+  -f "$GITHUB_ACTION_PATH/Dockerfile.react" \
+  frontend
 
-echo "Pushing Docker image..."
+echo "Push image"
 docker push "$IMAGE"
 
 echo "image_name=$IMAGE" >> $GITHUB_OUTPUT
