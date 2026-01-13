@@ -14,7 +14,7 @@ inputs:
     description: Registry password
     required: true
 
-  image-name:
+  image_name:
     description: Docker image name
     required: true
 
