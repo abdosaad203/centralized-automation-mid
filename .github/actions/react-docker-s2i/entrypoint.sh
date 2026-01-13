@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 set -e
 
 echo "Login to registry"
@@ -7,16 +7,18 @@ echo "$INPUT_PASSWORD" | docker login "$INPUT_REGISTRY" \
 
 IMAGE="$INPUT_REGISTRY/$INPUT_IMAGE_NAME:$INPUT_TAG"
 
-echo "Workspace content:"
-ls -la /github/workspace
-ls -la /github/workspace/frontend
-ls -la /github/workspace/frontend/dist
+# 👇 التعديل هنا: استخدام المتغير الصحيح للمسار
+WORKSPACE="$GITHUB_WORKSPACE"
+
+echo "Workspace content check:"
+ls -la "$WORKSPACE"
 
 echo "Build Docker image"
+# 👇 التعديل هنا: استخدام المتغير في أمر البناء
 docker build \
   -t "$IMAGE" \
   -f "$GITHUB_ACTION_PATH/Dockerfile.react" \
-  /github/workspace/frontend
+  "$WORKSPACE/frontend"
 
 echo "Push Docker image"
 docker push "$IMAGE"
