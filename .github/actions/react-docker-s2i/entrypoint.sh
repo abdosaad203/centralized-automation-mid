@@ -14,7 +14,6 @@ echo "Workspace content check:"
 ls -la "$WORKSPACE"
 
 echo "Build Docker image"
-# 👇 التعديل هنا: استخدام المتغير في أمر البناء
 docker build \
   -t "$IMAGE" \
   -f "$GITHUB_ACTION_PATH/Dockerfile.react" \
