@@ -5,19 +5,27 @@ inputs:
   registry:
     description: Docker registry
     required: true
+
   username:
     description: Registry username
     required: true
+
   password:
     description: Registry password
     required: true
+
   image-name:
     description: Docker image name
     required: true
+
   tag:
     description: Docker image tag
     required: false
     default: latest
+
+  api-base-url:
+    description: Vite API base URL
+    required: true
 
 outputs:
   image_name:
