@@ -23,15 +23,28 @@ jobs:
       contents: read
       packages: write
       security-events: write
+      actions: read
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      - name: GitLeaks Secret Scanning
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        continue-on-error: true 
+
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ inputs.dotnet-version }}
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: csharp
+          build-mode: manual
 
       - name: Restore Dependencies
         run: dotnet restore ${{ inputs.project-path }}
@@ -41,6 +54,11 @@ jobs:
           dotnet build ${{ inputs.project-path }} \
             -c ${{ inputs.build-configuration }} \
             --no-restore
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:csharp"
 
       - name: Run Tests
         if: ${{ inputs.run-tests }}

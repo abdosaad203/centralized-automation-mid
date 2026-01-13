@@ -18,14 +18,18 @@ inputs:
     description: Docker image tag
     required: false
     default: latest
-  api-base-url:
-    description: Vite API base URL
-    required: false
+
+# [NEW] Outputs Definition (Task 3.2)
+outputs:
+  image_name:
+    description: "Full image name with tag"
+    value: ${{ steps.build-push.outputs.image_name }}
 
 runs:
   using: "composite"
   steps:
     - name: Run S2I Script
+      id: build-push  # Important for outputs!
       shell: bash
       run: bash ${{ github.action_path }}/entrypoint.sh
       env:
