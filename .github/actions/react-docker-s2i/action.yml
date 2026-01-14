@@ -19,7 +19,6 @@ inputs:
     required: false
     default: latest
 
-# [NEW] Outputs Definition (Task 3.2)
 outputs:
   image_name:
     description: "Full image name with tag"
@@ -29,7 +28,7 @@ runs:
   using: "composite"
   steps:
     - name: Run S2I Script
-      id: build-push  # Important for outputs!
+      id: build-push
       shell: bash
       run: bash ${{ github.action_path }}/entrypoint.sh
       env:

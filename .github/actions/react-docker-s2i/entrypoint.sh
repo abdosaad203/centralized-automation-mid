@@ -7,7 +7,6 @@ echo "$INPUT_PASSWORD" | docker login "$INPUT_REGISTRY" \
 
 IMAGE="$INPUT_REGISTRY/$INPUT_IMAGE_NAME:$INPUT_TAG"
 
-# 👇 التعديل هنا: استخدام المتغير الصحيح للمسار
 WORKSPACE="$GITHUB_WORKSPACE"
 
 echo "Workspace content check:"
